@@ -20,12 +20,12 @@ class Deck:
     RANK = {"Ace", 2, 3, 4, 5, 6, 7, 8, 9, 10, "Jack", "Queen", "King"}
 
     # ----- Functions ----- #
-    # Makes the deck 52 cards (we will remove them randomly bc currDeck is a set, so we don't need to actually shuffle)
     def shuffle(self):
+        '''Creates a 52 card deck (Please note we remove cards randomly, so it is not actually shuffled).'''
         self.currDeck = set(product(self.__class__.RANK, self.__class__.SUIT)) # taking the cartesian product
 
-     # Returns n randomly chosen cards, and removes them from the deck
     def draw(self, n):
+        '''Returns n randomly chosen cards, and removes them from the deck'''
         cardTuple = [self.currDeck.pop() for i in range(n)] # returns a list of cards in the form (RANK, SUIT)
         cards = []
         for i in range(n):
@@ -43,22 +43,20 @@ class Player:
         self.counted = False # whether or not the player's hand has been counted yet
 
     # ----- Functions ----- # 
-    # Draws a hand of 6 (given) cards
-    # # Actually, tracks two hands:
-        # handInvisible, which contains all cards only this player can see
-        # handVisible, which contains all cards other players can see (is initiated to as an empty list)
     def drawHand(self, card1, card2, card3, card4, card5, card6):
+        '''Draws a hand of 6 (given) cards. Actually, two hands are tracked: handInvisible, which contains all cards only this player can see, and handVisible, 
+        which contains all cards other players can see (is initiated as an empty list).'''
         self.handInvisible = [card1, card2, card3, card4, card5, card6]
         self.handVisible = []
         self.counted = False
 
-    # Makes their whole hand visible
     def playHand(self):
+        '''Makes this player's hand completely visible.'''
         self.handVisible = self.handVisible + self.handInvisible
         self.handInvisible = []
 
-    # Adds n points to their total
     def addPoints(self, n):
+        '''Adds n points to this player's total points.'''
         self.points += n
         self.counted = True
 
@@ -82,6 +80,7 @@ class CurrPlayer(Player):
 
     # ----- Functions ----- #
     def addPlayer(self):
+        '''Notifies this player about a new opponent so that it can be tracked with their PLAYERS list.'''
         self.NUM_PLAYERS += 1
         self.__class__.PLAYERS.append(OtherPlayer(self.NUM_PLAYERS))
 
