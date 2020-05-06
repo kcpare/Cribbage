@@ -32,6 +32,7 @@ class CribbageServer:
         self.PLAYER_ACTIONS = { 
             'draw': self.drawPlayerHand,
             'start game': self.startGame,
+            'options': self.displayOptions,
             'play': self.playPlayerHand,
             'points': self.displayPoints,
         } 
@@ -268,7 +269,7 @@ class CribbageServer:
         return response
 
     def displayPoints(self, playerNumber):
-        response = ['']
+        response = [''] # important to initialize index 0
         for i in range(len(self.PLAYERS) - 1): # we have an extra "empty" player in order to start indexing at 1
             if (i+1) == playerNumber: # their points
                 response[0] = response[0] + '\nYou   : ' + str(self.PLAYERS[i+1].points) + ' points'
@@ -276,6 +277,17 @@ class CribbageServer:
                 response[0] = response[0] + '\nPlayer' + str(i+1) + ': ' + str(self.PLAYERS[i+1].points) + ' points'
 
         return response
+
+    def displayOptions(self, playerNumber):
+        '''Displays the possible commands a player can type. Message is sent only to the player who called !options.'''
+        response = [''] # important to initialize index 0
+        possibleActions = self.PLAYER_ACTIONS.keys()
+        response[0] = '\n To make an action, please type: !<command>. Possible commands include the following:'
+        for i in range(len(possibleActions)):
+            response[0] = response[0] + '\n' + str(possibleActions[i])
+
+        return response
+
 
 # ----- 'Main' Function ----- #
 if __name__ == '__main__': # this will be true only for the file directly run (any imported modules with similar statements will not have theirs run)
