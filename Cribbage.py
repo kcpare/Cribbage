@@ -37,6 +37,7 @@ class Player:
     # ----- Constructor ----- #
     def __init__(self, n):
         self.PLAYER_NUMBER = n
+        self.nickname = ''
         self.handInvisible = []
         self.handVisible = []
         self.points = 0 
