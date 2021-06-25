@@ -71,7 +71,7 @@ class CurrPlayer(Player):
     def __init__(self, n):
         super().__init__(n)
         # initializing list of players
-        #self.__class__.PLAYERS = [OtherPlayer(i+1) for i in range(n-1)] 
+        #self.__class__.PLAYERS = [Player(i+1) for i in range(n-1)] 
         self.__class__.PLAYERS.append("Empty") # so that players start indexing at 1
         for i in range(n-1):
             self.addPlayer()
@@ -82,13 +82,7 @@ class CurrPlayer(Player):
     def addPlayer(self):
         '''Notifies this player about a new opponent so that it can be tracked with their PLAYERS list.'''
         self.NUM_PLAYERS += 1
-        self.__class__.PLAYERS.append(OtherPlayer(self.NUM_PLAYERS))
-
-class OtherPlayer(Player):
-    '''Implements all of the information about other players from the perspective of the user'''
-
-    def __init__(self, n):
-        super().__init__(n)
+        self.__class__.PLAYERS.append(Player(self.NUM_PLAYERS))
 
 # ----- Test Cases ----- #
 if __name__ == '__main__':
@@ -122,6 +116,3 @@ if __name__ == '__main__':
         print("My player number is", me.PLAYER_NUMBER)
         print("The players numbers are", [me.PLAYERS[i].PLAYER_NUMBER for i in range(1,me.NUM_PLAYERS+1)])
         print([i+1 for i in range(me.NUM_PLAYERS)])
-    ### Testing OtherPlayer #####
-        #otherPlayer = OtherPlayer(3)
-        #print("otherPlayer's number is ", otherPlayer.PLAYER_NUMBER)
