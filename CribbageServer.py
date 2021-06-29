@@ -7,7 +7,8 @@
 
 from Cribbage import Deck
 from Cribbage import Player
-import GameState
+from GameState import GameState
+from GameState import STAGES
 import select
 import socket
 import sys 
@@ -191,27 +192,27 @@ class CribbageServer:
 
     def startGame(self, playerNumber):
         response = []
-        if GAMESTATE.getCurrStage() == STAGES.START:
+        if self.GAMESTATE.getCurrStage() == STAGES.START:
             if (len(self.PLAYERS_IP) - 1) < 2: # if we don't have at least 2 players
                 response.append("Sorry, not enough players! Please find an opponent.")
             else:
                 response.append("Welcome! Game is starting.")
                 response.append("Welcome! Player" + str(playerNumber) + " has started the game.")
-                GAMESTATE.moveToNextStage()
+                self.GAMESTATE.moveToNextStage()
         else:
             response.append("Game has already started!")
         return response
 
     def drawPlayerHand(self, playerNumber):
         response = []
-        if GAMESTATE.getCurrStage() == STAGES.DRAW
-            if not GAMESTATE.getPlayer(playerNumber).handInvisible: # if their hand is empty
-                GAMESTATE.drawPlayerHand()
+        if self.GAMESTATE.getCurrStage() == STAGES.DRAW:
+            if not self.GAMESTATE.getPlayer(playerNumber).handInvisible: # if their hand is empty
+                hand = self.GAMESTATE.drawPlayerHand(playerNumber)
                 response.append("You drew: " + str(hand))
                 response.append("Player" + str(playerNumber) + " has drawn: " + str(hand))
                 
-                if GAMESTATE.areAllHandsDealt():
-                    GAMESTATE.moveToNextStage()
+                if self.GAMESTATE.areAllHandsDealt():
+                    self.GAMESTATE.moveToNextStage()
             else: # they already have a hand
                 response.append("Sorry, you already have your hand!")
         else:
@@ -220,11 +221,15 @@ class CribbageServer:
 
     def playPlayerHand(self, playerNumber):
         response = []
-        if GAMESTATE.getCurrStage() == STAGES.PLAY:
-            if GAMESTATE.getPlayer(playerNumber).handInvisible: # if their hand has not already been played (is not empty)
-                hand = GAMESTATE.playPlayerHand()
+        if self.GAMESTATE.getCurrStage() == STAGES.PLAY:
+            if self.GAMESTATE.getPlayer(playerNumber).handInvisible: # if their hand has not already been played (is not empty)
+                hand = self.GAMESTATE.playPlayerHand(playerNumber)
                 response.append("You played you hand: " + str(hand))
                 response.append("Player" + str(playerNumber) + " has played: " + str(hand))
+
+                # testing whehter we need to switch to next stage
+                if self.GAMESTATE.areAllHandsPlayed():
+                    self.GAMESTATE.moveToNextStage()
             else: # if their hand has already been played
                 response.append("Sorry, you already played your hand!")
         else:
@@ -233,17 +238,17 @@ class CribbageServer:
 
     def countPlayerHand(self, playerNumber, points):
         response = []
-        if GAMESTATE.getCurrStage() == STAGES.PLAY: 
-            if GAMESTATE.hasPlayedHand(playerNumber): # if they've played their hand
-                if GAMESTATE.hasCountedHand(playerNumber): # if they haven't yet counted their hand
-                    GAMESTATE.addPointsToPlayer(playerNumber, points)
+        if self.GAMESTATE.getCurrStage() == STAGES.COUNT: 
+            if self.GAMESTATE.hasPlayedHand(playerNumber): # if they've played their hand
+                if not self.GAMESTATE.hasCountedHand(playerNumber): # if they haven't yet counted their hand
+                    self.GAMESTATE.addPointsToPlayer(playerNumber, points)
                     response.append("You gained " + str(points) + " points")
                     response.append("Player" + str(playerNumber) + " has gained " + str(points) + " points")
 
                     # testing whether we need to switch to next stage 
-                    if GAMESTATE.areAllHandsCounted():
-                        GAMESTATE.moveToNextStage()
-                        GAMESTATE.resetBoard()
+                    if self.GAMESTATE.areAllHandsCounted():
+                        self.GAMESTATE.moveToNextStage()
+                        self.GAMESTATE.resetBoard()
                 else:
                     response.append("You've already counted your hand!")
             else:
@@ -254,11 +259,11 @@ class CribbageServer:
 
     def displayPoints(self, playerNumber):
         response = ['']
-        for i in range(GAMESTATE.getNumberOfPlayers()): # we have an extra "empty" player in order to start indexing at 1
+        for i in range(self.GAMESTATE.getNumberOfPlayers()): # we have an extra "empty" player in order to start indexing at 1
             if (i+1) == playerNumber: # their points
-                response[0] = response[0] + '\nYou   : ' + str(GAMESTATE.getPlayer(i+1).points) + ' points'
+                response[0] = response[0] + '\nYou   : ' + str(self.GAMESTATE.getPlayer(i+1).points) + ' points'
             else: # everyone else's points
-                response[0] = response[0] + '\nPlayer' + str(i+1) + ': ' + str(GAMESTATE.getPlayer(i+1).points) + ' points'
+                response[0] = response[0] + '\nPlayer' + str(i+1) + ': ' + str(self.GAMESTATE.getPlayer(i+1).points) + ' points'
 
         return response
 
