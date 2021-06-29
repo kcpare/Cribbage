@@ -5,7 +5,6 @@
 
 import enum
 from Cribbage import Player
-from Cribbage import Deck
 
 class GameState:
     '''A class to store info about the state of the game'''
@@ -21,7 +20,6 @@ class GameState:
         self.deck.shuffle() # creating (and shuffling) a deck 
 
         self.handsDrawn = 0 # number of hands drawn
-        self.handsPlayed = 0 # number of hands played
         self.handsCounted = 0 # number of hands counted
 
     # ----- Methods ----- #
@@ -34,34 +32,28 @@ class GameState:
     def removePlayer(self, playerNumber):
         del self.PLAYERS[[playerNumber]]
 
-    # Draws a hand from a deck, assigns to the given player, marks one more hand as drawn and returns the hand
+    # Draws a hand from a deck, assigns to the given player, and marks one more hand as drawn
     def drawPlayerHand(self, playerNumber):
         hand = self.deck.draw(6)
         self.PLAYERS[playerNumber].drawHand(hand[0], hand[1], hand[2], hand[3], hand[4], hand[5])
         self.handsDrawn += 1
-        return hand
 
     # Returns whether all player hands have been dealt
     def areAllHandsDealt(self):
-        return self.handsDrawn == (len(self.PLAYERS)-1) # we have an extra "empty" player in order to start indexing at 1
+        return if self.handsDrawn == (len(self.PLAYERS)-1) # we have an extra "empty" player in order to start indexing at 1
 
     # Plays the player's hands and returns it
     def playPlayerHand(self, playerNumber):
         self.PLAYERS[playerNumber].playHand()
-        self.handsPlayed += 1
         return self.PLAYERS[playerNumber].handVisible
     
     # returns whether or not the player with the given playerNumber has played their hand
     def hasPlayedHand(self, playerNumber):
         return len(self.PLAYERS[playerNumber].handVisible) == 6
 
-    # Returns whether or not all hands have been played
-    def areAllHandsPlayed(self):
-        return self.handsPlayed == (len(self.PLAYERS)-1)
-
     # returns whether or not the player with the given playerNumber has counted their hand
     def hasCountedHand(self, playerNumber):
-        self.PLAYERS[playerNumber].counted == True
+        self.PLAYERS[playerNumber].counted == False
 
     # Gives the player with the given playerNumber the given number of points
     # Marks that player has having their hand counted
@@ -76,7 +68,6 @@ class GameState:
     # Resets the board (resets handsDrawn, handsCounted, and shuffles the deck)
     def resetBoard(self):
         self.handsCounted = 0
-        self.handsPlayed = 0
         self.handsDrawn = 0
         self.deck.shuffle()
 
@@ -108,7 +99,7 @@ class STAGES(enum.Enum):
     # A method to grab the next stage, wrapping back to START when END is reached
     def nextStage(self):
         nextVal = self.value + 1
-        if nextVal == STAGES.END.value:
-            return STAGES(2)
-        else:
+        if nextVal < END.value:
             return STAGES(nextVal)
+        else:
+            return STAGES(1)
