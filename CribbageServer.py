@@ -7,6 +7,7 @@
 
 from Cribbage import Deck
 from Cribbage import Player
+import GameState
 import select
 import socket
 import sys 
@@ -17,7 +18,6 @@ class CribbageServer:
     # ----- Class Variables ----- #
     SERVER_IP_ADDRESS = '10.0.0.1' # we'll want to make this dynamic in the future
     SERVER_PORT = 2000
-    MAX_PLAYERS = 2
 
     # ----- Starting Server ----- #
     # Setting up a server to accept and handle players during a cribbage game
@@ -25,7 +25,7 @@ class CribbageServer:
         # his instructions can be found at: https://pymotw.com/2/select/
     def __init__(self):
         # ----- Setting up server housekeeping for the game ----- #
-        self.CURR_STAGE = "START" # Possible stages: ("START", "DRAW", "PLAY", "COUNT")
+        self.GAMESTATE = GameState()
 
         # Dictionaries of possible actions by the player
         #   In form of key: value pair, where the value is a function that will validate the action 
@@ -39,22 +39,13 @@ class CribbageServer:
         # a list of the ip addresses of players, in order of their joining (and thus assigned number)
         self.PLAYERS_IP = ["Empty"] # Includes an empty entry in order for players to index starting at 1
 
-        # a list of Player Objects, also indexed starting at 1
-        self.PLAYERS = ["Empty"]
-
-        # the deck we'll be playing with
-        self.deck = Deck()
-        self.deck.shuffle() # creating (and shuffling) a deck 
-        self.handsDrawn = 0 # number of hands drawn
-        self.handsCounted = 0 # number of hands counted
-
         # ----- setting up the server to connect with players ----- # 
 
         # creating a socket to listen for joining players
         serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # we want IPv4 and a TCP socket
         serverSocket.setblocking(0)
         serverSocket.bind((self.__class__.SERVER_IP_ADDRESS, self.__class__.SERVER_PORT))
-        serverSocket.listen(self.__class__.MAX_PLAYERS) # will prevent us from accepting any more than MAX_PLAYER number of connections
+        serverSocket.listen(self.GAMESTATE.__class__.MAX_PLAYERS) # will prevent us from accepting any more than MAX_PLAYER number of connections
         print("SERVER: Ready!")
 
         # Creating list of input sockets, output sockets, and a queue for outgoing messages
@@ -77,7 +68,7 @@ class CribbageServer:
                     playerNum = len(self.PLAYERS_IP)
                     print("SERVER: Accepted a new player from ", clientAddr, ". They will be Player", playerNum)
                     self.PLAYERS_IP.append(clientAddr) # adding the player to our list of players
-                    self.PLAYERS.append(Player(playerNum))
+                    self.GAMESTATE.addPlayer(Player(playerNum))
 
                     # Sending out welcome messages
                     self.queueMessage(connectionSocket, "You have joined the game! Welcome! You are Player" + str(playerNum)) # to this player
@@ -186,7 +177,7 @@ class CribbageServer:
             self.outputs.remove(playerSocket)
         num = self.PLAYERS_IP.index(playerSocket.getpeername())
         del self.PLAYERS_IP[num]
-        del self.PLAYERS[num]
+        self.GAMESTATE.removePlayer(num)
         self.inputs.remove(playerSocket)
         playerSocket.close()
         del self.messageQueues[playerSocket]
@@ -200,29 +191,27 @@ class CribbageServer:
 
     def startGame(self, playerNumber):
         response = []
-        if self.CURR_STAGE == "START":
+        if GAMESTATE.getCurrStage() == STAGES.START:
             if (len(self.PLAYERS_IP) - 1) < 2: # if we don't have at least 2 players
                 response.append("Sorry, not enough players! Please find an opponent.")
             else:
                 response.append("Welcome! Game is starting.")
                 response.append("Welcome! Player" + str(playerNumber) + " has started the game.")
-                self.CURR_STAGE = "DRAW"
+                GAMESTATE.moveToNextStage()
         else:
             response.append("Game has already started!")
         return response
 
     def drawPlayerHand(self, playerNumber):
         response = []
-        if self.CURR_STAGE == "DRAW":
-            if not self.PLAYERS[playerNumber].handInvisible: # if their hand is empty
-                hand = self.deck.draw(6)
-                self.PLAYERS[playerNumber].drawHand(hand[0], hand[1], hand[2], hand[3], hand[4], hand[5])
+        if GAMESTATE.getCurrStage() == STAGES.DRAW
+            if not GAMESTATE.getPlayer(playerNumber).handInvisible: # if their hand is empty
+                GAMESTATE.drawPlayerHand()
                 response.append("You drew: " + str(hand))
                 response.append("Player" + str(playerNumber) + " has drawn: " + str(hand))
                 
-                self.handsDrawn += 1
-                if self.handsDrawn == (len(self.PLAYERS)-1): # we have an extra "empty" player in order to start indexing at 1
-                    self.CURR_STAGE = "PLAY"
+                if GAMESTATE.areAllHandsDealt():
+                    GAMESTATE.moveToNextStage()
             else: # they already have a hand
                 response.append("Sorry, you already have your hand!")
         else:
@@ -231,10 +220,9 @@ class CribbageServer:
 
     def playPlayerHand(self, playerNumber):
         response = []
-        if self.CURR_STAGE == "PLAY":
-            if self.PLAYERS[playerNumber].handInvisible: # if their hand has not already been played (is not empty)
-                self.PLAYERS[playerNumber].playHand()
-                hand = self.PLAYERS[playerNumber].handVisible
+        if GAMESTATE.getCurrStage() == STAGES.PLAY:
+            if GAMESTATE.getPlayer(playerNumber).handInvisible: # if their hand has not already been played (is not empty)
+                hand = GAMESTATE.playPlayerHand()
                 response.append("You played you hand: " + str(hand))
                 response.append("Player" + str(playerNumber) + " has played: " + str(hand))
             else: # if their hand has already been played
@@ -245,20 +233,17 @@ class CribbageServer:
 
     def countPlayerHand(self, playerNumber, points):
         response = []
-        if self.CURR_STAGE == "PLAY": 
-            if len(self.PLAYERS[playerNumber].handVisible) == 6: # if they've played their hand
-                if self.PLAYERS[playerNumber].counted == False: # if they haven't yet counted their hand
-                    self.PLAYERS[playerNumber].addPoints(points)
+        if GAMESTATE.getCurrStage() == STAGES.PLAY: 
+            if GAMESTATE.hasPlayedHand(playerNumber): # if they've played their hand
+                if GAMESTATE.hasCountedHand(playerNumber): # if they haven't yet counted their hand
+                    GAMESTATE.addPointsToPlayer(playerNumber, points)
                     response.append("You gained " + str(points) + " points")
                     response.append("Player" + str(playerNumber) + " has gained " + str(points) + " points")
 
                     # testing whether we need to switch to next stage 
-                    self.handsCounted += 1
-                    if self.handsCounted == (len(self.PLAYERS)-1): # we have an extra "empty" player in order to start indexing at 1
-                        self.CURR_STAGE = "DRAW"
-                        self.handsCounted = 0
-                        self.handsDrawn = 0
-                        self.deck.shuffle()
+                    if GAMESTATE.areAllHandsCounted():
+                        GAMESTATE.moveToNextStage()
+                        GAMESTATE.resetBoard()
                 else:
                     response.append("You've already counted your hand!")
             else:
@@ -269,11 +254,11 @@ class CribbageServer:
 
     def displayPoints(self, playerNumber):
         response = ['']
-        for i in range(len(self.PLAYERS) - 1): # we have an extra "empty" player in order to start indexing at 1
+        for i in range(GAMESTATE.getNumberOfPlayers()): # we have an extra "empty" player in order to start indexing at 1
             if (i+1) == playerNumber: # their points
-                response[0] = response[0] + '\nYou   : ' + str(self.PLAYERS[i+1].points) + ' points'
+                response[0] = response[0] + '\nYou   : ' + str(GAMESTATE.getPlayer(i+1).points) + ' points'
             else: # everyone else's points
-                response[0] = response[0] + '\nPlayer' + str(i+1) + ': ' + str(self.PLAYERS[i+1].points) + ' points'
+                response[0] = response[0] + '\nPlayer' + str(i+1) + ': ' + str(GAMESTATE.getPlayer(i+1).points) + ' points'
 
         return response
 
