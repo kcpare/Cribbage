@@ -12,9 +12,13 @@ import sys
 import queue
 
 class CribbageClient:
+    '''A class that can be run by a player to connect to the game'''
+
+    # ---------------------------------------- Class Variables ---------------------------------------- #
     SERVER_IP_ADDRESS = '10.0.0.1' 
     SERVER_PORT = 2000
 
+    # -------------------- Constructor -------------------- #
     # The useage of the select.select() function, and following three 'for' loops monitoring output from select() are courtesy of Doug Hellman
         # his instructions can be found at: https://pymotw.com/2/select/
         # For the client, select.select() is used to implement a nonblocking socket by forcing the program to take breaks to read from and write to the server as well as
@@ -80,6 +84,7 @@ class CribbageClient:
                 self.disconnect()
         sys.exit()
     
+    # -------------------- Helper Functions -------------------- #
     # Disconnects player from socket and removes monitoring of sys.stdin (standard input)
     def disconnect(self):
         self.inputs.remove(self.playerSocket)
@@ -137,7 +142,7 @@ class CribbageClient:
             print("Server:", response)
 
 
-# ----- main ----- #
+# -------------------- main -------------------- #
 if __name__ == '__main__':
     cc = CribbageClient()
 

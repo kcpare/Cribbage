@@ -2,9 +2,10 @@
 # Cribbage Game State
 
 from abc import ABC, abstractmethod
-
-# An interface to define classes which represent and execute valid actions a player can take      
+      
 class Action(ABC):
+    '''An interface to define classes which represent and execute valid actions a player can take'''
+    
     # The command associated with their action (ex. !draw, !play, !count). By convention, these are prefaced with an exclaimation mark
     @abstractmethod
     def getActionCommand(self):

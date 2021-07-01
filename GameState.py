@@ -9,7 +9,8 @@ from Cribbage import Deck
 
 class GameState:
     '''A class to store info about the state of the game'''
-    # ----- Class Variables ----- #
+    
+    # -------------------- Class Variables -------------------- #
     MAX_PLAYERS = 4
 
     def __init__(self):
@@ -24,7 +25,7 @@ class GameState:
         self.handsPlayed = 0 # number of hands played
         self.handsCounted = 0 # number of hands counted
 
-    # ----- Methods ----- #
+    # -------------------- Methods -------------------- #
     def moveToNextStage(self):
         self.CURR_STAGE = self.CURR_STAGE.nextStage()
 
@@ -80,7 +81,7 @@ class GameState:
         self.handsDrawn = 0
         self.deck.shuffle()
 
-    # ----- Get Methods ----- #
+    # -------------------- Get Methods -------------------- #
     def getCurrStage(self):
         return self.CURR_STAGE
 
@@ -90,7 +91,7 @@ class GameState:
     def getNumberOfPlayers(self):
         return len(self.PLAYERS) - 1 # we have an extra "empty" player in order to start indexing at 1
 
-    # ----- Helper Methods ----- #
+    # -------------------- Helper Methods -------------------- #
     def resetHandsDrawn(self):
         self.handsDrawn = 0
 
