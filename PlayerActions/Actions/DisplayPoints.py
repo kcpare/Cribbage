@@ -1,7 +1,7 @@
 # Kathryn Pare
 # Cribbage Game State
 
-from .Action import Action
+from ..Action import Action
 from GameState import GameState
 
 # StartGame implements Action to define how a player can play their hand

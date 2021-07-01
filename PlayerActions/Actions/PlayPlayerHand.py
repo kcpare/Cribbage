@@ -1,7 +1,7 @@
 # Kathryn Pare
 # Cribbage Game State
 
-from .Action import Action
+from ..Action import Action
 from GameState import GameState
 from GameState import STAGES
 

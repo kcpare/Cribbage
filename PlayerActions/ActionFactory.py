@@ -1,11 +1,11 @@
 # Kathryn Pare
 # Cribbage Game State
 
-from .StartGame import StartGame
-from .DrawPlayerHand import DrawPlayerHand
-from .PlayPlayerHand import PlayPlayerHand
-from .CountPlayerHand import CountPlayerHand
-from .DisplayPoints import DisplayPoints
+from .Actions.StartGame import StartGame
+from .Actions.DrawPlayerHand import DrawPlayerHand
+from .Actions.PlayPlayerHand import PlayPlayerHand
+from .Actions.CountPlayerHand import CountPlayerHand
+from .Actions.DisplayPoints import DisplayPoints
 
 # ActionFactory holds all possible player actions
 # When one needs to add a new action to the game, please add it to the list actions
