@@ -16,16 +16,17 @@ import queue
 
 class CribbageServer:
     '''A server to faciliate a game of cribbage for 2-4 clients'''
-    # ----- Class Variables ----- #
+    
+    # -------------------- Class Variables -------------------- #
     SERVER_IP_ADDRESS = '10.0.0.1' # we'll want to make this dynamic in the future
     SERVER_PORT = 2000
 
-    # ----- Starting Server ----- #
+    # -------------------- Starting Server -------------------- #
     # Setting up a server to accept and handle players during a cribbage game
     # The useage of the select.select() function, and following three 'for' loops monitoring output from select() are courtesy of Doug Hellman
         # his instructions can be found at: https://pymotw.com/2/select/
     def __init__(self):
-        # ----- Setting up server housekeeping for the game ----- #
+        # -------------------- Setting up server housekeeping for the game -------------------- #
         self.GAMESTATE = GameState()
 
         # Dictionaries of possible actions by the player
@@ -36,7 +37,7 @@ class CribbageServer:
         # a list of the ip addresses of players, in order of their joining (and thus assigned number)
         self.PLAYERS_IP = ["Empty"] # Includes an empty entry in order for players to index starting at 1
 
-        # ----- setting up the server to connect with players ----- # 
+        # -------------------- setting up the server to connect with players -------------------- # 
 
         # creating a socket to listen for joining players
         serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # we want IPv4 and a TCP socket
@@ -123,7 +124,7 @@ class CribbageServer:
         serverSocket.close()
         sys.exit()
     
-    # ----- Helper functions ----- #
+    # -------------------- Helper functions -------------------- #
     # Takes in a desired action by a player and that player's number
     # Determines whether the action is valid and returns the appropriate response
     # Returns three values: (String) responseBack, (boolean) broadcast, (String) responseOthers
@@ -167,7 +168,7 @@ class CribbageServer:
         playerSocket.close()
         del self.messageQueues[playerSocket]
 
-# ----- 'Main' Function ----- #
+# -------------------- 'Main' Function -------------------- #
 if __name__ == '__main__': # this will be true only for the file directly run (any imported modules with similar statements will not have theirs run)
     cServer = CribbageServer()
 

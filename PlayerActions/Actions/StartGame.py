@@ -5,13 +5,17 @@ from ..Action import Action
 from GameState import GameState
 from GameState import STAGES
 
-# StartGame implements Action to define how a player can start the game
 class StartGame(Action):
+    '''StartGame implements Action to define how a player can start the game'''
+    
+    # -------------------- Class Variables -------------------- #
     COMMAND = "!startgame"
     
+    # -------------------- Constructor -------------------- #
     def __init__(self, gameState):
         self.GAMESTATE = gameState
 
+    # -------------------- Methods -------------------- #
     # The command associated with their action (ex. !draw, !play, !count). By convention, these are prefaced with an exclaimation mark
     def getActionCommand(self):
         return self.__class__.COMMAND
