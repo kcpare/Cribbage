@@ -8,7 +8,7 @@
 from Cribbage import Deck
 from Cribbage import Player
 from GameState import GameState
-import ActionFactory
+from PlayerActions.ActionFactory import ActionFactory
 import select
 import socket
 import sys 
@@ -30,7 +30,7 @@ class CribbageServer:
 
         # Dictionaries of possible actions by the player
         #   Where the key is the action command typed by the player and the value is a function that will validate the action 
-        ACTION_FACTORY = ActionFactory()
+        ACTION_FACTORY = ActionFactory(self.GAMESTATE)
         self.PLAYER_ACTIONS = ACTION_FACTORY.getPlayerActions()
 
         # a list of the ip addresses of players, in order of their joining (and thus assigned number)
@@ -82,7 +82,9 @@ class CribbageServer:
                         if messageStr[0] == "!": # if the message was a request to the server for an action (ex. drawing a card, i.e. !draw)
                             desiredAction = messageStr.split()[0]
                             actionLength = len(desiredAction)
-                            playerInput = messageStr[actionLength - 1:]
+                            playerInput = messageStr[actionLength + 1:]
+                            print("SERVER: type of playerInput:", type(playerInput))
+                            print("SERVER: desiredAction = ", desiredAction, " and playerInput are ", playerInput)
                             responseBack, broadcast, responseAll = self.handleMessage(desiredAction, playerInput, currPlayerNumber)
 
                             # send a message back to the player

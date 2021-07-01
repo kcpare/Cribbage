@@ -1,14 +1,17 @@
 # Kathryn Pare
 # Cribbage Game State
 
-import Action
+from .Action import Action
 from GameState import GameState
 from GameState import STAGES
 
 # StartGame implements Action to define how a player can play their hand
 class CountPlayerHand(Action):
     COMMAND = "!count"
-    
+
+    def __init__(self, gameState):
+        self.GAMESTATE = gameState
+
     # The command associated with their action (ex. !draw, !play, !count). By convention, these are prefaced with an exclaimation mark
     def getActionCommand(self):
         return self.__class__.COMMAND
@@ -18,6 +21,7 @@ class CountPlayerHand(Action):
     # -- length 1 for a (string) message back to that player, or
     # -- length 2 for a (string) message back to that player and a (string) message for all other players
     def execute(self, playerNumber, playerInput):
+        response = []
         # check that input is not empty and is an integer
         if(not playerInput):
             response.append("Please remember to include a number of points you would like to count")
@@ -26,11 +30,12 @@ class CountPlayerHand(Action):
             response.append("Please remember to add a valid integer number of points")
             return response
 
-        response = []
+        points = int(playerInput)
+
         if self.GAMESTATE.getCurrStage() == STAGES.COUNT: 
             if self.GAMESTATE.hasPlayedHand(playerNumber): # if they've played their hand
                 if not self.GAMESTATE.hasCountedHand(playerNumber): # if they haven't yet counted their hand
-                    self.GAMESTATE.addPointsToPlayer(playerNumber, input)
+                    self.GAMESTATE.addPointsToPlayer(playerNumber, points)
                     response.append("You gained " + str(points) + " points")
                     response.append("Player" + str(playerNumber) + " has gained " + str(points) + " points")
 

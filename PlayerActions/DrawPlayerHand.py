@@ -1,7 +1,7 @@
 # Kathryn Pare
 # Cribbage Game State
 
-import Action
+from .Action import Action
 from GameState import GameState
 from GameState import STAGES
 
@@ -9,6 +9,9 @@ from GameState import STAGES
 class DrawPlayerHand(Action):
     COMMAND = "!draw"
     
+    def __init__(self, gameState):
+        self.GAMESTATE = gameState
+
     # The command associated with their action (ex. !draw, !play, !count). By convention, these are prefaced with an exclaimation mark
     def getActionCommand(self):
         return self.__class__.COMMAND

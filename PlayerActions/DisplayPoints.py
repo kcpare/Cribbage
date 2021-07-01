@@ -1,13 +1,16 @@
 # Kathryn Pare
 # Cribbage Game State
 
-import Action
+from .Action import Action
 from GameState import GameState
 
 # StartGame implements Action to define how a player can play their hand
-class DrawPlayerHand(Action):
+class DisplayPoints(Action):
     COMMAND = "!points"
-    
+
+    def __init__(self, gameState):
+        self.GAMESTATE = gameState
+
     # The command associated with their action (ex. !draw, !play, !count). By convention, these are prefaced with an exclaimation mark
     def getActionCommand(self):
         return self.__class__.COMMAND

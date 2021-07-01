@@ -1,7 +1,7 @@
 # Kathryn Pare
 # Cribbage Game State
 
-import Action
+from .Action import Action
 from GameState import GameState
 from GameState import STAGES
 
@@ -9,6 +9,9 @@ from GameState import STAGES
 class StartGame(Action):
     COMMAND = "!startgame"
     
+    def __init__(self, gameState):
+        self.GAMESTATE = gameState
+
     # The command associated with their action (ex. !draw, !play, !count). By convention, these are prefaced with an exclaimation mark
     def getActionCommand(self):
         return self.__class__.COMMAND
@@ -20,7 +23,7 @@ class StartGame(Action):
     def execute(self, playerNumber, input):
         response = []
         if self.GAMESTATE.getCurrStage() == STAGES.START:
-            if (len(self.PLAYERS_IP) - 1) < 2: # if we don't have at least 2 players
+            if (self.GAMESTATE.getNumberOfPlayers() < 2): # if we don't have at least 2 players
                 response.append("Sorry, not enough players! Please find an opponent.")
             else:
                 response.append("Welcome! Game is starting.")

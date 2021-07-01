@@ -1,10 +1,11 @@
 # Kathryn Pare
 # Cribbage Game State
 
-import StartGame
-import DrawPlayerHand
-import PlayPlayerHand
-import CountPlayerHand
+from .StartGame import StartGame
+from .DrawPlayerHand import DrawPlayerHand
+from .PlayPlayerHand import PlayPlayerHand
+from .CountPlayerHand import CountPlayerHand
+from .DisplayPoints import DisplayPoints
 
 # ActionFactory holds all possible player actions
 # When one needs to add a new action to the game, please add it to the list actions
@@ -13,12 +14,13 @@ class ActionFactory:
     #   In form of key: value pair, where the key is the action command and the value is a function that will validate the action 
     PLAYER_ACTIONS = {}
 
-    def __init__(self):
+    def __init__(self, gameState):
          actions = []
-         actions.append(StartGame())
-         actions.append(DrawPlayerHand())
-         actions.append(PlayPlayerHand())
-         actions.append(CountPlayerHand())
+         actions.append(StartGame(gameState))
+         actions.append(DrawPlayerHand(gameState))
+         actions.append(PlayPlayerHand(gameState))
+         actions.append(CountPlayerHand(gameState))
+         actions.append(DisplayPoints(gameState))
          # please add new actions here
 
          self.initializePlayerActions(actions)
