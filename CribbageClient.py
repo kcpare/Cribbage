@@ -19,11 +19,17 @@ class CribbageClient:
     SERVER_PORT = 2000
 
     # -------------------- Constructor -------------------- #
-    # The useage of the select.select() function, and following three 'for' loops monitoring output from select() are courtesy of Doug Hellman
+    def __init__(self):
+        self.connect()
+
+    # -------------------- Methods -------------------- #
+    # Connects to Server
+    def connect(self):
+        # Please note: The useage of the select.select() function, and following three 'for' loops monitoring output from select() are courtesy of Doug Hellman
         # his instructions can be found at: https://pymotw.com/2/select/
         # For the client, select.select() is used to implement a nonblocking socket by forcing the program to take breaks to read from and write to the server as well as
             # listening to the player's actions by forcing the program to (potentially) read once, (potentially) write once, and (potentially) listen once, going in a cycle
-    def __init__(self):
+        
         # Keeping track of the state of the game (will change if the users wants to exit)
         self.status = 'joining'        
 
@@ -38,7 +44,11 @@ class CribbageClient:
         self.outputs = []
         self.messageQueues = {}
         self.messageQueues[self.playerSocket] = queue.Queue()
-        
+
+        self.listen()
+
+    # Listens for input from server
+    def listen(self):
         while self.inputs: # empty lists evaluate to false in python  
             readable, writeable, exceptional = select.select(self.inputs, self.outputs, self.inputs)
 
@@ -83,7 +93,7 @@ class CribbageClient:
                 print("Client: Due to an exception, closing connection with server ", e.getpeername())
                 self.disconnect()
         sys.exit()
-    
+
     # -------------------- Helper Functions -------------------- #
     # Disconnects player from socket and removes monitoring of sys.stdin (standard input)
     def disconnect(self):
