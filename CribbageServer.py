@@ -52,7 +52,7 @@ class CribbageServer:
         self.outputs = []
         self.messageQueues = {}
 
-        listen(serverSocket)
+        self.listen(serverSocket)
 
     # Start listening for player input
     def listen(self, serverSocket):
