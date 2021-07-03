@@ -108,46 +108,6 @@ class CribbageClient:
         if response[0] == '>': # it's message from another player
             print(response[1:])
 
-        elif "You have joined the game!" in response: # it's a welcoming message from server
-            self.status = 'joined'
-            # create a player object for this player (which creates player objects for any preceeding players too)
-            self.me = CurrPlayer(int(response[-1])) # last place will hold the player's number
-            print("Server:", response)
-            print("Server: What would you like to do? Please enter 'exit' if you would like to leave the game")
-
-        elif "has joined!" in response: # if another player has joined
-            self.me.addPlayer()
-            print("Server:", response)
-
-        elif "You drew" in response: # you drew a hand
-            cards = response[10:].strip('][\'').split(', ')
-            self.me.drawHand(cards[0], cards[1], cards[2], cards[3], cards[4] ,cards[5])
-            print("Server:", response) # finish
-
-        elif "has drawn:" in response: # an opponent drew a hand
-            cards = response[18:].strip('][\'').split(', ')
-            playerNum = int(response[6])
-            self.me.__class__.PLAYERS[playerNum].drawHand(cards[0], cards[1], cards[2], cards[3], cards[4] ,cards[5])
-            print("Server: Player" + response[6] + " has drawn their hand")
-
-        elif "You played" in response: # if you played your hand
-            self.me.playHand()
-            print("Server:", response)
-
-        elif "has played" in response: # if someone else played their hand
-            playerNum = int(response[6])
-            self.me.PLAYERS[playerNum].playHand()
-            print("Server:", response)
-
-        elif "You gained" in response: # if you gained points
-            self.me.addPoints(int(response[11]))
-            print("Server:", response)
-
-        elif "has gained" in response: # if someone else gained points
-            playerNum = int(response[6])
-            self.me.PLAYERS[playerNum].addPoints(int(response[19]))
-            print("Server:", response)
-
         else: # it's a message from the server that does not require action by the player's program
             print("Server:", response)
 

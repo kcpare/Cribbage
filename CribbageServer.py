@@ -78,7 +78,9 @@ class CribbageServer:
                     self.GAMESTATE.addPlayer(Player(playerNum))
 
                     # Sending out welcome messages
-                    self.queueMessage(connectionSocket, "You have joined the game! Welcome! You are Player" + str(playerNum)) # to this player
+                    message = "You have joined the game! Welcome! You are Player" + str(playerNum)
+                    message += "\nWhat would you like to do? Please enter 'exit' if you would like to leave the game""
+                    self.queueMessage(connectionSocket, message) # to this player
                     for playerSocket in self.inputs: # to everyone else
                         if (playerSocket is not connectionSocket) and (playerSocket is not serverSocket):
                             self.queueMessage(playerSocket, "Player" + str(playerNum) + " has joined!")
@@ -161,6 +163,7 @@ class CribbageServer:
 
     # Takes in a player's socket, adds them to the list of output sockets if needed, and adds a message (string) to their queue
     def queueMessage(self, playerSocket, message):
+        message = "Server: " + message
         self.messageQueues[playerSocket].put(message)
         if playerSocket not in self.outputs:
             self.outputs.append(playerSocket)

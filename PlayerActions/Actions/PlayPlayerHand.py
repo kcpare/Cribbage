@@ -20,7 +20,7 @@ class PlayPlayerHand(Action):
     def getActionCommand(self):
         return self.__class__.COMMAND
 
-    # An algorithm to validate execute the action along with any player input following the action, which takes in the player number
+    # An algorithm to validate and execute the action along with any player input following the action, which takes in the player number
     # - This returns the server's 'response' back, which is a list of either:
     # -- length 1 for a (string) message back to that player, or
     # -- length 2 for a (string) message back to that player and a (string) message for all other players
