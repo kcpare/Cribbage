@@ -29,7 +29,7 @@ class DrawPlayerHand(Action):
         if self.GAMESTATE.getCurrStage() == STAGES.DRAW:
             if not self.GAMESTATE.getPlayer(playerNumber).handInvisible: # if their hand is empty
                 hand = self.GAMESTATE.drawPlayerHand(playerNumber)
-                response.append("You drew: " + str(hand))
+                response.append("You drew " + str(hand))
                 response.append("Player" + str(playerNumber) + " has drawn: " + str(hand))
                 
                 if self.GAMESTATE.areAllHandsDealt():
