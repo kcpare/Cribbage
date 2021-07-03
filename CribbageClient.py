@@ -109,7 +109,7 @@ class CribbageClient:
             print(response[1:])
 
         else: # it's a message from the server that does not require action by the player's program
-            print("Server:", response)
+            print(response)
 
 
 # -------------------- main -------------------- #

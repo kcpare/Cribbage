@@ -79,7 +79,7 @@ class CribbageServer:
 
                     # Sending out welcome messages
                     message = "You have joined the game! Welcome! You are Player" + str(playerNum)
-                    message += "\nWhat would you like to do? Please enter 'exit' if you would like to leave the game""
+                    message += "\nWhat would you like to do? Please enter 'exit' if you would like to leave the game"
                     self.queueMessage(connectionSocket, message) # to this player
                     for playerSocket in self.inputs: # to everyone else
                         if (playerSocket is not connectionSocket) and (playerSocket is not serverSocket):
